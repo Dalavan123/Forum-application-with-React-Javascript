@@ -1,32 +1,25 @@
-import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
-import { CategoriesNavbar } from './components/CategoriesNavbar';
-import { TopBarSection } from './components/TopBarSection';
+import { createBrowserRouter, Outlet } from 'react-router-dom';
+import { App } from './components/App';
 import { ThreadsView } from './views/ThreadsView';
 
-const AppLayout = () => {
-  return (
-    <div>
-      <TopBarSection />
-      <CategoriesNavbar />
-      <Outlet />
-    </div>
-  );
-};
+export const router = createBrowserRouter([
+  {
+    element: <App />,
+    path: '/',
 
-const Router = () => {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<AppLayout />}>
-          <Route path='/' element={<div>Home Page</div>} />
-          <Route
-            path='/categories/:category_id/threads'
-            element={<ThreadsView />}
-          />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
-};
-
-export default Router;
+    children: [
+      {
+        element: (
+          <section>
+            <h1>404 Page. The URL does not have any matches</h1>
+          </section>
+        ),
+        path: '*',
+      },
+      {
+        element: <ThreadsView />,
+        path: '/categories/:category_id/threads',
+      },
+    ],
+  },
+]);

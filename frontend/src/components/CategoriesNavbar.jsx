@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { NavLink } from 'react-router-dom';
 
 export const CategoriesNavbar = () => {
   const [categories, setCategories] = useState([]);
@@ -18,7 +19,14 @@ export const CategoriesNavbar = () => {
       ) : (
         categories.map(category =>
           category.category_id ? (
-            <li key={category.category_id}>{category.category_name}</li>
+            <li key={category.category_id}>
+              <NavLink
+                to={`/categories/${category.category_id}/threads`}
+                className={({ isActive }) => (isActive ? 'active' : undefined)}
+              >
+                {category.category_name}
+              </NavLink>
+            </li>
           ) : null
         )
       )}

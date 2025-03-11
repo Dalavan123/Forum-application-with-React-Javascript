@@ -3,24 +3,21 @@ import { useParams } from 'react-router-dom';
 
 export function ThreadsView() {
   const { category_id } = useParams();
-  const [categoryName, setCategoryName] = useState('');
+  const [category, setCategory] = useState({});
   const [threads, setThreads] = useState([]);
 
   useEffect(() => {
     fetch(`http://localhost:3000/categories/${category_id}/threads`)
-      .then(response => {
-        return response.json();
-      })
+      .then(response => response.json())
       .then(data => {
-        setCategoryName(data.category_name);
+        setCategory({ name: data.category_name });
         setThreads(data.threads);
-        console.log('Threads:', threads);
       });
   }, [category_id]);
 
   return (
     <div>
-      <h1>{categoryName}</h1>
+      <h1>{category.name}</h1>
       {threads.length === 0 ? (
         <p>Loading...</p>
       ) : (

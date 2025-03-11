@@ -1,7 +1,13 @@
-import Router from './router';
+import { CategoriesNavbar } from './CategoriesNavbar';
+import { TopBarSection } from './TopBarSection';
+import { Outlet } from 'react-router-dom';
 
-function App() {
-  return <Router />;
+export function App() {
+  return (
+    <>
+      <TopBarSection />
+      <CategoriesNavbar />
+      <Outlet />
+    </>
+  );
 }
-
-export default App;

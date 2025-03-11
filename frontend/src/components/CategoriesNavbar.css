@@ -5,3 +5,7 @@ ul.categories-navbar {
   justify-content: space-between;
   padding: 1rem;
 }
+
+.categories-navbar li .active {
+  background-color: white;
+}
