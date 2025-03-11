@@ -1,0 +1,13 @@
+@import url(./components/TopBarSection.css);
+@import url(./components/CategoriesNavbar.css);
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  padding: 2rem;
+  background-color: lightgrey;
+}

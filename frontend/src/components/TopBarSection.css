@@ -1,0 +1,18 @@
+.logo-image {
+  width: 50px;
+  height: 50px;
+  vertical-align: bottom;
+}
+
+.top-bar-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  padding: 1rem;
+}
+
+.search-form {
+  display: flex;
+  gap: 8px;
+}
