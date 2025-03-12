@@ -1,29 +1,50 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import ActionButton from '../components/ActionButton';
 
 export function ThreadsView() {
   const { category_id } = useParams();
-  const [category, setCategory] = useState({});
+  const [category_name, setCategoryName] = useState('');
   const [threads, setThreads] = useState([]);
 
   useEffect(() => {
     fetch(`http://localhost:3000/categories/${category_id}/threads`)
-      .then(response => response.json())
+      .then(response => {
+        return response.json();
+      })
       .then(data => {
-        setCategory({ name: data.category_name });
+        setCategoryName(data.category_name);
         setThreads(data.threads);
+        console.log('Threads:', threads);
       });
   }, [category_id]);
 
   return (
     <div>
-      <h1>{category.name}</h1>
-      {threads.length === 0 ? (
-        <p>Loading...</p>
-      ) : (
+      {category_name && <h1>{category_name}</h1>}
+      {threads.length > 0 && (
         <ul>
           {threads.map(thread => (
-            <li key={thread.threads_id}>{thread.title}</li>
+            <li key={thread.threads_id}>
+              <Link
+                to={`/categories/${category_id}/threads/${thread.threads_id}`}
+              >
+                {thread.title}
+              </Link>
+              <p>Posted by {thread.username}</p>
+              <ActionButton
+                type='thread'
+                id={thread.threads_id}
+                action='edit'
+                category_id={category_id}
+              />
+              <ActionButton
+                type='thread'
+                id={thread.threads_id}
+                action='delete'
+                category_id={category_id}
+              />
+            </li>
           ))}
         </ul>
       )}
