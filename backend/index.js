@@ -1,72 +1,44 @@
+// ########## Get all the packages and data needed ##########
+
 import express from 'express';
-import Database from 'better-sqlite3';
+
 import cors from 'cors';
 import fetch from 'node-fetch';
 
-const app = express();
-const db = new Database('../forum.db');
+// ########## Create the server, and configure it. ##########
 
+// Creates the server by invoking the express function and assigning it to the app variable.
+const app = express();
+
+// Enable CORS
 app.use(cors());
 
-app.get('/', (req, res) => {
-  res.send('Welcome to the backend server!');
+// Previously we used app.use but now cors because....
+// Parse the body object so it's available on the req object.
+//app.use(express.json());
+
+// Import the controller methods from blog.controller.js
+import {
+  homePage,
+  getCategories,
+  getThreads,
+  getComments,
+} from './forumcontroller.js';
+
+// ########## Endpoints ##########
+app.get('/', homePage);
+app.get('/categories', getCategories);
+app.get('/categories/:category_id/threads', getThreads);
+app.get('/categories/:category_id/threads/:threads_id/comments', getComments);
+
+//########## Starts the server ##########
+
+console.log('Starting server...');
+app.listen(3000, () => {
+  console.log('Listening to port 3000');
 });
 
-app.get('/categories', (req, res) => {
-  // Retrieve categories from database
-  const categories = db.prepare('SELECT * FROM categories').all();
-  res.json(categories);
-});
-
-app.get('/categories/:category_id/threads', (req, res) => {
-  const categoryId = req.params.category_id;
-  const category = db
-    .prepare('SELECT * FROM categories WHERE category_id = ?')
-    .get(categoryId);
-  if (!category) {
-    res.status(404).send({ error: 'Category not found' });
-  } else {
-    const threads = db
-      .prepare(
-        `
-        SELECT t.*, u.username
-        FROM threads t
-        JOIN users u ON t.users_id = u.users_id
-        WHERE t.category_id = ?
-      `
-      )
-      .all(categoryId);
-    res.json({ category_name: category.category_name, threads });
-  }
-});
-
-app.get('/categories/:category_id/threads/:threads_id/comments', (req, res) => {
-  const threads_id = req.params.threads_id;
-  const thread = db
-    .prepare('SELECT * FROM threads WHERE threads_id = ?')
-    .get(threads_id);
-  if (!thread) {
-    res.status(404).send({ error: 'Thread not found' });
-  } else {
-    const comments = db
-      .prepare(
-        `
-        SELECT c.*, u.username
-        FROM comments c
-        JOIN users u ON c.users_id = u.users_id
-        WHERE c.threads_id = ?
-      `
-      )
-      .all(threads_id);
-    if (!comments) {
-      res.status(404).send({ error: 'Comments not found' });
-    } else {
-      res.json({ ThreadsTitle: thread.title, comments });
-    }
-  }
-});
-
-app.put('/categories/:category_id/threads/:threads_id', (req, res) => {
+/* app.put('/categories/:category_id/threads/:threads_id', (req, res) => {
   const category_id = req.params.category_id;
   const threads_id = req.params.threads_id;
   const thread = db
@@ -135,9 +107,4 @@ app.delete(
       res.json({ message: 'Comment deleted successfully' });
     }
   }
-);
-
-console.log('Starting server...');
-app.listen(3000, () => {
-  console.log('Listening to port 3000');
-});
+); */

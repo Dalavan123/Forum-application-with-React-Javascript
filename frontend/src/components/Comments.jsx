@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import ActionButton from '../components/ActionButton'; // Import the ActionButton component
+import ActionButton from './ActionButton'; // Import the ActionButton component
 
-export const CommentsView = ({ category_id, threads_id }) => {
+export const Comments = ({ category_id, threads_id }) => {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
 

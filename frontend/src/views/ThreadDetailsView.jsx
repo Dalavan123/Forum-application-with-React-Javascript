@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { CommentsView } from './CommentsView';
+import { Comments } from '../components/Comments';
 
 export const ThreadDetailsView = () => {
   const { category_id, threads_id } = useParams();
@@ -20,7 +20,7 @@ export const ThreadDetailsView = () => {
   return (
     <div>
       <h1>{thread.ThreadsTitle}</h1> {/* //access the ThreadsTitle property */}
-      <CommentsView category_id={category_id} threads_id={threads_id} />
+      <Comments category_id={category_id} threads_id={threads_id} />
     </div>
   );
 };
