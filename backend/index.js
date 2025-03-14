@@ -3,7 +3,10 @@
 import express from 'express';
 
 import cors from 'cors';
-import fetch from 'node-fetch';
+
+// ########## Import the Routes from file forumRoutes ##########
+
+import { routes } from './forumRoutes.js';
 
 // ########## Create the server, and configure it. ##########
 
@@ -13,23 +16,12 @@ const app = express();
 // Enable CORS
 app.use(cors());
 
-// Previously we used app.use but now cors because....
 // Parse the body object so it's available on the req object.
-//app.use(express.json());
-
-// Import the controller methods from blog.controller.js
-import {
-  homePage,
-  getCategories,
-  getThreads,
-  getComments,
-} from './forumcontroller.js';
+app.use(express.json());
 
 // ########## Endpoints ##########
-app.get('/', homePage);
-app.get('/categories', getCategories);
-app.get('/categories/:category_id/threads', getThreads);
-app.get('/categories/:category_id/threads/:threads_id/comments', getComments);
+
+app.use(routes);
 
 //########## Starts the server ##########
 

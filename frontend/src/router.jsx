@@ -1,7 +1,8 @@
 import { createBrowserRouter, Outlet } from 'react-router-dom';
 import { App } from './components/App';
-import { ThreadsView } from './views/ThreadsView';
+import { CategoryDetailsView } from './views/CategoryDetailsView';
 import { ThreadDetailsView } from './views/ThreadDetailsView';
+import { HomeView } from './views/HomeView';
 
 export const router = createBrowserRouter([
   {
@@ -10,12 +11,20 @@ export const router = createBrowserRouter([
 
     children: [
       {
+        element: <HomeView />,
+        index: true,
+      },
+      {
+        element: <Outlet />,
+        path: '/categories/:category_id',
+      },
+      {
         element: <ThreadDetailsView />,
         path: '/categories/:category_id/threads/:threads_id',
       },
 
       {
-        element: <ThreadsView />,
+        element: <CategoryDetailsView />,
         path: '/categories/:category_id/threads',
       },
 

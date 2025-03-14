@@ -1,10 +1,13 @@
+import { Link } from 'react-router-dom';
 import Logo from '../assets/logo_livsstilen.jpg';
 
 export function TopBarSection() {
   return (
     <section className='top-bar-section'>
       <div className='image-div'>
-        <img className='logo-image' src={Logo} alt={'Form Logo'} />
+        <Link to='/'>
+          <img className='logo-image' src={Logo} alt={'Form Logo'} />
+        </Link>
       </div>
       <div>
         <form action='' className='search-form'>
