@@ -6,7 +6,7 @@ import {
   fetchThreadsByCategory,
   fetchThreadById,
   fetchCommentsByThread,
-  fetchThreads,
+  fetchAllThreads,
 } from './forumModel.js';
 
 // Home page
@@ -22,7 +22,7 @@ export function getCategories(req, res) {
 
 //Retrive all threads from database
 export function getThreads(req, res) {
-  const threads = fetchThreads();
+  const threads = fetchAllThreads();
   res.json(threads);
 }
 

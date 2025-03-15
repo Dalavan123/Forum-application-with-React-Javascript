@@ -16,8 +16,18 @@ export function fetchCategoryById(categoryId) {
     .get(categoryId);
 }
 
-export function fetchThreads() {
-  return db.prepare(`SELECT * FROM threads`).all();
+export function fetchAllThreads(order = 'DESC') {
+  return db
+    .prepare(
+      `
+    SELECT t.*, COUNT(c.comments_id) as num_comments
+    FROM threads t
+    LEFT JOIN comments c ON t.threads_id = c.threads_id
+    GROUP BY t.threads_id
+    ORDER BY timestamp ${order}
+  `
+    )
+    .all();
 }
 
 //Get threads for a specific category

@@ -1,0 +1,10 @@
+.threads-and-comments-list {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.timestamp-and-numofcomments {
+  display: flex;
+  gap: 2rem;
+}
