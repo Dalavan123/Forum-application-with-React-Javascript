@@ -16,33 +16,56 @@ export function fetchCategoryById(categoryId) {
     .get(categoryId);
 }
 
-export function fetchAllThreads(order = 'DESC') {
+// Fetch all threads with sorting
+export function fetchAllThreads(orderBy = 'timestamp', order = 'DESC') {
+  const validColumns = ['username', 'timestamp', 'num_comments'];
+  if (!validColumns.includes(orderBy)) {
+    orderBy = 'timestamp'; // Default to sorting by timestamp
+  }
+
   return db
     .prepare(
       `
-    SELECT t.*, COUNT(c.comments_id) as num_comments
+    SELECT t.*, u.username, COUNT(c.comment_id) as num_comments
     FROM threads t
-    LEFT JOIN comments c ON t.threads_id = c.threads_id
-    GROUP BY t.threads_id
-    ORDER BY timestamp ${order}
+    JOIN users u ON t.user_id = u.user_id
+    LEFT JOIN comments c ON t.thread_id = c.thread_id
+    GROUP BY t.thread_id
+    ORDER BY ${orderBy} ${order}
   `
     )
     .all();
 }
 
-//Get threads for a specific category
-export function fetchThreadsByCategory(categoryId) {
+// Fetch threads by category with sorting
+export function fetchThreadsByCategory(
+  categoryId,
+  orderBy = 'timestamp',
+  order = 'DESC'
+) {
+  const validColumns = ['username', 'timestamp', 'num_comments'];
+  if (!validColumns.includes(orderBy)) {
+    orderBy = 'timestamp'; // Default sorting
+  }
+
   return db
     .prepare(
       `
-        SELECT t.*,u.username FROM threads t JOIN users u ON t.users_id = u.users_id WHERE t.category_id = ?`
+    SELECT t.*, u.username, COUNT(c.comment_id) as num_comments
+    FROM threads t
+    JOIN users u ON t.user_id = u.user_id
+    LEFT JOIN comments c ON t.thread_id = c.thread_id
+    WHERE t.category_id = ?
+    GROUP BY t.thread_id
+    ORDER BY ${orderBy} ${order}
+  `
     )
     .all(categoryId);
 }
 
 //Get a thread by ID
 export function fetchThreadById(threadId) {
-  return db.prepare(`SELECT * FROM threads WHERE threads_id = ?`).get(threadId);
+  return db.prepare(`SELECT * FROM threads WHERE thread_id = ?`).get(threadId);
 }
 
 // Get comments for a specific thread
@@ -50,9 +73,9 @@ export function fetchCommentsByThread(threadId) {
   return db
     .prepare(
       `SELECT c.*, u.username
-        FROM comments c
-        JOIN users u ON c.users_id = u.users_id
-        WHERE c.threads_id = ?`
+      FROM comments c
+      JOIN users u ON c.user_id = u.user_id
+      WHERE c.thread_id = ?`
     )
-    .all(threadId);
+    .all(threadId); // Only pass `threadId`
 }

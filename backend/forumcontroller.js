@@ -22,36 +22,60 @@ export function getCategories(req, res) {
 
 //Retrive all threads from database
 export function getThreads(req, res) {
-  const threads = fetchAllThreads();
+  const { orderBy, order } = req.query;
+  const threads = fetchAllThreads(orderBy, order);
   res.json(threads);
 }
 
 //Get a category and its threads by Category ID
 export function getThreadsbyCategoryId(req, res) {
-  const categoryId = req.params.category_id;
-  const category = fetchCategoryById(categoryId);
+  const { category_id } = req.params;
+  const { orderBy, order } = req.query;
+  const category = fetchCategoryById(category_id);
 
   if (!category) {
     return res.status(404).send({ error: 'Category not found' });
   }
 
-  const threads = fetchThreadsByCategory(categoryId);
+  const threads = fetchThreadsByCategory(category_id, orderBy, order);
   res.json({ category_name: category.category_name, threads });
 }
 
 //Retrieve comments from database for a thread
 export function getComments(req, res) {
-  const threadId = req.params.threads_id;
-  const thread = fetchThreadById(threadId);
+  const { category_id, thread_id } = req.params;
 
+  const thread = fetchThreadById(thread_id);
   if (!thread) {
-    return res.status(404).send({ error: 'Thread not found' });
+    return res.status(404).json({ error: 'Thread not found' });
   }
 
-  const comments = fetchCommentsByThread(threadId);
+  // Pass category_id to the fetch function
+  const comments = fetchCommentsByThread(thread_id, category_id);
   if (!comments || comments.length === 0) {
-    return res.status(404).send({ error: 'Comments not found' });
+    return res.status(404).json({ error: 'No comments found for this thread' });
   }
 
   res.json({ ThreadsTitle: thread.title, comments });
+}
+
+// Retrieve a single thread by ID
+export function getThreadById(req, res) {
+  const { category_id, thread_id } = req.params;
+
+  // Fetch the thread
+  const thread = fetchThreadById(thread_id);
+
+  if (!thread) {
+    return res.status(404).json({ error: 'Thread not found' });
+  }
+
+  // Ensure the thread belongs to the correct category
+  if (thread.category_id != category_id) {
+    return res
+      .status(400)
+      .json({ error: 'Thread does not belong to this category' });
+  }
+
+  res.json(thread);
 }

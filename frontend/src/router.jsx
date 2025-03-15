@@ -20,7 +20,7 @@ export const router = createBrowserRouter([
       },
       {
         element: <ThreadDetailsView />,
-        path: '/categories/:category_id/threads/:threads_id',
+        path: '/categories/:category_id/threads/:thread_id',
       },
 
       {

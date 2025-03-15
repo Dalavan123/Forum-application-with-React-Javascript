@@ -25,22 +25,22 @@ export function CategoryDetailsView() {
       {threads.length > 0 && (
         <ul>
           {threads.map(thread => (
-            <li key={thread.threads_id}>
+            <li key={thread.thread_id}>
               <Link
-                to={`/categories/${category_id}/threads/${thread.threads_id}`}
+                to={`/categories/${category_id}/threads/${thread.thread_id}`}
               >
                 {thread.title}
               </Link>
               <p>Posted by {thread.username}</p>
               <ActionButton
                 type='thread'
-                id={thread.threads_id}
+                id={thread.thread_id}
                 action='edit'
                 category_id={category_id}
               />
               <ActionButton
                 type='thread'
-                id={thread.threads_id}
+                id={thread.thread_id}
                 action='delete'
                 category_id={category_id}
               />
