@@ -64,7 +64,14 @@ export function fetchThreadsByCategory(
 
 //Get a thread by ID
 export function fetchThreadById(threadId) {
-  return db.prepare(`SELECT * FROM threads WHERE thread_id = ?`).get(threadId);
+  return db
+    .prepare(
+      `SELECT t.*, u.username 
+    FROM threads t
+    JOIN users u ON t.user_id = u.user_id 
+    WHERE thread_id = ?`
+    )
+    .get(threadId);
 }
 
 // Get comments for a specific thread
