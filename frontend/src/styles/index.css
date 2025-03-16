@@ -1,0 +1,14 @@
+@import url(./TopBarSection.css);
+@import url(./CategoriesNavbar.css);
+@import url(./HomeView.css);
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  padding: 2rem;
+  background-color: lightgrey;
+}

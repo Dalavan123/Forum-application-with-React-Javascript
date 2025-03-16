@@ -1,7 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../assets/logo_livsstilen.jpg';
+import { ActionButton } from './buttonComponents/ActionButton';
 
 export function TopBarSection() {
+  const navigate = useNavigate(); //✅ Enables navigation
+
   return (
     <section className='top-bar-section'>
       <div className='image-div'>
@@ -20,7 +23,11 @@ export function TopBarSection() {
         </form>
       </div>
       <div>
-        <button>Add a new post</button>
+        <ActionButton
+          label='+ Add a New Post'
+          onClick={() => navigate('/new-thread')}
+          className={'add-post-button'}
+        ></ActionButton>
       </div>
     </section>
   );

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import ActionButton from './ActionButton'; // Import the ActionButton component
 
 export const Comments = ({ category_id, thread_id }) => {
   const [comments, setComments] = useState([]);
@@ -33,19 +32,6 @@ export const Comments = ({ category_id, thread_id }) => {
           <div key={comment.comment_id}>
             <p>Posted by {comment.username}</p>
             <p>{comment.content}</p>
-            <ActionButton
-              type='comment'
-              id={comment.comment_id}
-              action='edit'
-              thread_id={thread_id}
-            />
-            <ActionButton
-              type='comment'
-              id={comment.comment_id}
-              action='delete'
-              thread_id={thread_id}
-            />
-            <ActionButton label='Edit' onClick={editComment} />
           </div>
         ))
       ) : (

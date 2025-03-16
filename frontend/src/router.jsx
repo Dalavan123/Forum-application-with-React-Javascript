@@ -3,6 +3,7 @@ import { App } from './components/App';
 import { CategoryDetailsView } from './views/CategoryDetailsView';
 import { ThreadDetailsView } from './views/ThreadDetailsView';
 import { HomeView } from './views/HomeView';
+import { NewThreadView } from './views/NewThreadView';
 
 export const router = createBrowserRouter([
   {
@@ -26,6 +27,11 @@ export const router = createBrowserRouter([
       {
         element: <CategoryDetailsView />,
         path: '/categories/:category_id/threads',
+      },
+
+      {
+        element: <NewThreadView />,
+        path: '/new-thread',
       },
 
       {

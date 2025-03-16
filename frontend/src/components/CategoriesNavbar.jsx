@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import { fetchCategories } from '../api/apiCategories';
 import { NavLink } from 'react-router-dom';
 
 export const CategoriesNavbar = () => {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:3000/categories')
-      .then(response => response.json())
+    console.log('🔍 Fetching categories...'); // ✅ Debugging
+    fetchCategories()
       .then(data => {
+        console.log('✅ Fetched categories:', data);
         setCategories(data);
-      });
+      })
+      .catch(error => console.error('❌ Error fetching categories:', error));
   }, []);
 
   return (

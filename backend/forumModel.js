@@ -57,8 +57,7 @@ export function fetchThreadsByCategory(
     LEFT JOIN comments c ON t.thread_id = c.thread_id
     WHERE t.category_id = ?
     GROUP BY t.thread_id
-    ORDER BY ${orderBy} ${order}
-  `
+    ORDER BY ${orderBy} ${order}`
     )
     .all(categoryId);
 }
@@ -72,10 +71,42 @@ export function fetchThreadById(threadId) {
 export function fetchCommentsByThread(threadId) {
   return db
     .prepare(
-      `SELECT c.*, u.username
-      FROM comments c
-      JOIN users u ON c.user_id = u.user_id
-      WHERE c.thread_id = ?`
+      `SELECT c.comment_id, c.content, c.timestamp, u.username 
+     FROM comments c 
+     JOIN users u ON c.user_id = u.user_id 
+     WHERE c.thread_id = ? 
+     ORDER BY c.timestamp DESC`
     )
-    .all(threadId); // Only pass `threadId`
+    .all(threadId);
+}
+
+// Add a new comment
+export function addNewComment(threadId, userId, content) {
+  return db
+    .prepare(
+      `INSERT INTO comments (thread_id, user_id, content, timestamp) 
+     VALUES (?, ?, ?, datetime('now'))`
+    )
+    .run(threadId, userId, content);
+}
+
+export function createUser(username) {
+  const existingUser = db
+    .prepare('SELECT * FROM users WHERE username = ?')
+    .get(username);
+  if (existingUser) return existingUser;
+
+  const result = db
+    .prepare('INSERT INTO users (username) VALUES (?)')
+    .run(username);
+  return result ? { user_id: result.lastInsertRowid, username } : null;
+}
+
+export function createNewThread(title, content, categoryId, userId) {
+  return db
+    .prepare(
+      `INSERT INTO threads (title, content, category_id, user_id, timestamp) 
+    VALUES (?, ?, ?, ?, datetime('now'))`
+    )
+    .run(title, content, categoryId, userId);
 }

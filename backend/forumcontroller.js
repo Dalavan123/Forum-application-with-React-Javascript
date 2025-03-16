@@ -7,6 +7,9 @@ import {
   fetchThreadById,
   fetchCommentsByThread,
   fetchAllThreads,
+  createUser,
+  addNewComment,
+  createNewThread,
 } from './forumModel.js';
 
 // Home page
@@ -31,14 +34,17 @@ export function getThreads(req, res) {
 export function getThreadsbyCategoryId(req, res) {
   const { category_id } = req.params;
   const { orderBy, order } = req.query;
-  const category = fetchCategoryById(category_id);
 
+  const category = fetchCategoryById(category_id);
   if (!category) {
     return res.status(404).send({ error: 'Category not found' });
   }
 
   const threads = fetchThreadsByCategory(category_id, orderBy, order);
-  res.json({ category_name: category.category_name, threads });
+  res.json({
+    category_name: category.category_name || 'Unknown Category',
+    threads,
+  });
 }
 
 //Retrieve comments from database for a thread
@@ -50,13 +56,9 @@ export function getComments(req, res) {
     return res.status(404).json({ error: 'Thread not found' });
   }
 
-  // Pass category_id to the fetch function
-  const comments = fetchCommentsByThread(thread_id, category_id);
-  if (!comments || comments.length === 0) {
-    return res.status(404).json({ error: 'No comments found for this thread' });
-  }
+  const comments = fetchCommentsByThread(thread_id, category_id) || [];
 
-  res.json({ ThreadsTitle: thread.title, comments });
+  res.json({ ThreadsTitle: thread.title, comments }); // ✅ Always return an array
 }
 
 // Retrieve a single thread by ID
@@ -78,4 +80,91 @@ export function getThreadById(req, res) {
   }
 
   res.json(thread);
+}
+
+//Get comments for a thread
+
+export function getCommentsByThread(req, res) {
+  const { thread_id } = req.params;
+
+  const comments = fetchCommentsByThread(thread_id);
+  if (!comments) {
+    return res
+      .status(404)
+      .json({ error: 'No comments found for this thread.' });
+  }
+
+  res.json({ comments });
+}
+
+export function addComment(req, res) {
+  const { thread_id } = req.params;
+  const { content, username } = req.body;
+
+  console.log('🔍 Received a request to add a comment!');
+  console.log('Thread ID:', thread_id);
+  console.log('Request Body:', req.body); // ✅ Log full request body
+
+  if (!content || !username) {
+    console.error('❌ Missing fields:', { content, username });
+    return res
+      .status(400)
+      .json({ error: 'Content and username are required.' });
+  }
+
+  // Ensure the user exists or create them
+  let user = createUser(username);
+  if (!user) {
+    return res.status(500).json({ error: 'Failed to create user.' });
+  }
+
+  // Add the comment
+  const newComment = addNewComment(thread_id, user.user_id, content);
+  if (!newComment) {
+    return res.status(500).json({ error: 'Failed to add comment.' });
+  }
+  console.log('✅ Comment successfully added!');
+  res
+    .status(201)
+    .json({ message: 'Comment added successfully', comment: newComment });
+}
+
+export function createThread(req, res) {
+  const { title, content, category_id, username } = req.body;
+
+  console.log('🔍 Received Thread Data:', req.body); // ✅ Log the incoming request data
+
+  if (!title || !username || !category_id) {
+    return res
+      .status(400)
+      .json({ error: 'Title, category, and username are required.' });
+  }
+
+  // Ensure user exists or create them
+  let user = createUser(username);
+  if (!user) {
+    console.error('❌ Failed to create/find user.');
+    return res.status(500).json({ error: 'Failed to create user.' });
+  }
+
+  try {
+    const newThread = createNewThread(
+      title,
+      content,
+      category_id,
+      user.user_id
+    );
+    if (!newThread) {
+      console.error('❌ Failed to insert thread into database.');
+      return res.status(500).json({ error: 'Failed to create thread.' });
+    }
+
+    console.log('✅ Thread created successfully:', newThread);
+    res
+      .status(201)
+      .json({ message: 'Thread created successfully', thread: newThread });
+  } catch (error) {
+    console.error('❌ Database Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 }

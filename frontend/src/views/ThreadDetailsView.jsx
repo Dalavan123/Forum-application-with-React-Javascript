@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Comments } from '../components/Comments';
+import { CommentList } from '../components/CommentList';
+import { CommentForm } from '../components/CommentForm';
+import { fetchCommentsByThreadId, addComment } from '../api/apiComments';
 
-export const ThreadDetailsView = () => {
+export function ThreadDetailsView() {
   const { category_id, thread_id } = useParams();
-  console.log('category_id:', category_id, 'thread_id:', thread_id); // Debugging output
-
   const [thread, setThread] = useState(null);
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,56 +14,47 @@ export const ThreadDetailsView = () => {
   useEffect(() => {
     if (!category_id || !thread_id) return;
 
-    const fetchThread = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(
-          `http://localhost:3000/categories/${category_id}/threads/${thread_id}`
-        );
-        if (!response.ok)
-          throw new Error(`HTTP Error! Status: ${response.status}`);
-        const data = await response.json();
-        setThread(data);
-      } catch (error) {
-        console.error('Error fetching thread:', error);
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchThread();
+    // Fetch thread details
+    fetch(
+      `http://localhost:3000/categories/${category_id}/threads/${thread_id}`
+    )
+      .then(res => res.json())
+      .then(data => setThread(data))
+      .catch(error => console.error('Error fetching thread:', error))
+      .finally(() => setLoading(false));
+
+    // Fetch comments
+    fetchCommentsByThreadId(thread_id)
+      .then(data => setComments(data.comments || []))
+      .catch(error => console.error('Error fetching comments:', error));
   }, [category_id, thread_id]);
 
-  useEffect(() => {
-    if (!category_id || !thread_id) return;
-
-    const fetchComments = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:3000/categories/${category_id}/threads/${thread_id}/comments`
-        );
-        if (!response.ok)
-          throw new Error(`HTTP Error! Status: ${response.status}`);
-        const data = await response.json();
-        setComments(data);
-      } catch (error) {
-        console.error('Error fetching comments:', error);
-      }
-    };
-    fetchComments();
-  }, [category_id, thread_id]);
+  // Handle adding a new comment
+  const handleCommentSubmit = async newComment => {
+    console.log('🔍 Sending Comment:', newComment); // ✅ Log the request body
+    try {
+      await addComment(thread_id, newComment);
+      setComments([
+        ...comments,
+        { username: newComment.username, text: newComment.commentText },
+      ]);
+    } catch (error) {
+      console.error('Error adding comment:', error);
+    }
+  };
 
   if (loading) return <h1>Loading...</h1>;
   if (error) return <h1>Error: {error}</h1>;
 
   return (
     <div>
-      <h1>{thread?.ThreadsTitle || 'Thread Not Found'}</h1>
-      <Comments
-        category_id={category_id}
-        thread_id={thread_id}
-        comments={comments}
-      />
+      <h1>{thread?.title || 'Thread Not Found'}</h1>
+
+      {/* Display Comments */}
+      <CommentList comments={comments} />
+
+      {/* Add a New Comment */}
+      <CommentForm onSubmit={handleCommentSubmit} />
     </div>
   );
-};
+}

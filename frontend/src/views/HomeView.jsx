@@ -47,8 +47,9 @@ export const HomeView = () => {
                 >
                   {thread.title}
                 </Link>
-                <span>Created by: {thread.username}</span>
+
                 <div className='timestamp-and-numofcomments'>
+                  <span>Created by: {thread.username}</span>
                   <span>
                     Created at: {new Date(thread.timestamp).toLocaleString()}
                   </span>
