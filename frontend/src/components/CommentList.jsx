@@ -1,4 +1,5 @@
 import React from 'react';
+import { CommentActions } from './CommentActions';
 
 export function CommentList({ comments }) {
   console.log('🛠️ Rendering Comments:', comments); // ✅ Debugging to ensure comments are passed correctly
@@ -8,8 +9,8 @@ export function CommentList({ comments }) {
 
   return (
     <ul>
-      {comments.map((comment, index) => (
-        <li key={comment.comment_id || index}>
+      {comments.map(comment => (
+        <li key={comment.comment_id}>
           {' '}
           {/* ✅ Use comment_id or fallback */}
           <strong>{comment.username}</strong>: {comment.content}
@@ -18,6 +19,15 @@ export function CommentList({ comments }) {
             🕒 {new Date(comment.timestamp).toLocaleString()}{' '}
             {/* ✅ Format timestamp */}
           </span>
+          {/* Comment Edit & Delete Buttons */}
+          <CommentActions
+            onEdit={() =>
+              console.log('✏️ Editing comment:', comment.comment_id)
+            }
+            onDelete={() =>
+              console.log('🗑️ Deleting comment:', comment.comment_id)
+            }
+          />
         </li>
       ))}
     </ul>
