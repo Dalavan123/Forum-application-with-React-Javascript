@@ -10,8 +10,9 @@ export function CommentList({ comments }) {
   return (
     <ul>
       {comments.map(comment => (
-        <li key={comment.comment_id}>
+        <li key={comment.comment_id || Math.random()}>
           {' '}
+          {/* ✅ Ensures a unique key */}
           {/* ✅ Use comment_id or fallback */}
           <strong>{comment.username}</strong>: {comment.content}
           <br />

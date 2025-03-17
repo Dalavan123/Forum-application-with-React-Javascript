@@ -1,4 +1,4 @@
-// ########## Handles interactions with the database - queries ##########
+// ########## Handles interactions/logic with the database - queries ##########
 
 // Import the database class from better-sqlite3
 import Database from 'better-sqlite3';
@@ -116,4 +116,22 @@ export function createNewThread(title, content, categoryId, userId) {
     VALUES (?, ?, ?, ?, datetime('now'))`
     )
     .run(title, content, categoryId, userId);
+}
+
+export function deleteThreadById(threadId) {
+  return db.prepare('DELETE FROM threads WHERE thread_id = ?').run(threadId);
+}
+
+export function updateThreadById(threadId, title, content) {
+  return db
+    .prepare('UPDATE threads SET title=?, content=? WHERE thread_id = ?')
+    .run(title, content, threadId);
+}
+
+export function createNewComment(threadId, userId, content) {
+  return db
+    .prepare(
+      "INSERT INTO comments (thread_id, user_id, content, timestamp) VALUES (?, ?, ?, datetime('now'))"
+    )
+    .run(threadId, userId, content);
 }

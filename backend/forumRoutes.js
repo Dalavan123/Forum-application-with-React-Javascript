@@ -11,6 +11,8 @@ import {
   getCommentsByThread,
   createThread,
   addComment,
+  deleteThread,
+  updateThread,
 } from './forumController.js';
 
 export const routes = express.Router();
@@ -30,5 +32,7 @@ routes.post('/threads', createThread);
 routes.post('/threads/:thread_id/comments', addComment);
 
 // ########## DELETE - Endpoints ##########
+routes.delete('/threads/:thread_id', deleteThread);
 
 // ########## PUT - Endpoints ##########
+routes.put('/threads/:thread_id', updateThread);

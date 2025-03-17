@@ -23,12 +23,30 @@ export function ThreadProvider({ children }) {
       });
   }, []);
 
+  // ✅ Ensure `addNewThread` is correctly defined
+  const addNewThread = newThread => {
+    console.log('✅ Adding new thread to state:', newThread);
+    setThreads(prevThreads => [...prevThreads, newThread]);
+  };
+
+  // Ensure new threads update immedieately in state
   const loadComments = async threadId => {
     try {
+      console.log('🔄 Fetching comments for thread:', threadId);
       const data = await fetchCommentsByThreadId(threadId);
-      setComments(prev => ({ ...prev, [threadId]: data.comments || [] }));
+      console.log('✅ API Response for Comments:', data); // ✅ Debugging
+
+      if (data.comments) {
+        setComments(prev => ({
+          ...prev,
+          [threadId]: data.comments, // ✅ Store comments in state properly
+        }));
+      }
     } catch (error) {
-      console.error(`Error fetching comments for thread ${threadId}:`, error);
+      console.error(
+        `❌ Error fetching comments for thread ${threadId}:`,
+        error
+      );
     }
   };
 
@@ -37,6 +55,7 @@ export function ThreadProvider({ children }) {
       value={{
         threads,
         setThreads,
+        addNewThread,
         comments,
         setComments,
         loadComments,

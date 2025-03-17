@@ -22,7 +22,17 @@ export const createThread = async newThread => {
 };
 
 export const deleteThread = async threadId => {
-  const url = `${BASE_URL}/${threadId}`;
+  const url = `${BASE_URL}/${threadId}`; // ✅ Ensure the correct API URL
   const options = { method: 'DELETE' };
   await apiRequest(url, options, 'Failed to delete thread');
+};
+
+export const updateThread = async (threadId, updateData) => {
+  const url = `${BASE_URL}/${threadId}`;
+  const options = {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updateData),
+  };
+  return await apiRequest(url, options, 'Failed to updated thread');
 };

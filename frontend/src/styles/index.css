@@ -1,6 +1,7 @@
 @import url(./TopBarSection.css);
 @import url(./CategoriesNavbar.css);
 @import url(./HomeView.css);
+@import url(./ThreadDetailsView.css);
 
 * {
   box-sizing: border-box;

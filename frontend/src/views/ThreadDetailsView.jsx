@@ -1,71 +1,135 @@
-import React, { useContext, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { CommentList } from '../components/CommentList';
 import { CommentForm } from '../components/CommentForm';
 import { ThreadContext } from '../context/ThreadContext';
+import { deleteThread, updateThread } from '../api/apiThreads';
 import { addComment } from '../api/apiComments';
+<api></api>;
 import { ThreadActions } from '../components/ThreadActions';
 
 export function ThreadDetailsView() {
   const { category_id, thread_id } = useParams();
-  const { threads, comments, loadComments, setComments, loading, error } =
+  const navigate = useNavigate();
+  const { threads, comments, loadComments, setThreads, setComments } =
     useContext(ThreadContext);
+  const [editMode, setEditMode] = useState(false);
+  const [editedTitle, setEditedTitle] = useState('');
+  const [editedContent, setEditedContent] = useState('');
+  const [message, setMessage] = useState(''); //state for success message
 
-  //Find the current thread from context
-  const thread = threads.find(thread => thread.thread_id === Number(thread_id));
+  // Find thread from Context
+  const thread = threads.find(t => t.thread_id === Number(thread_id));
 
   useEffect(() => {
     if (!thread_id) return;
-    loadComments(thread_id); //Load comments when component mounts
-  }, [thread_id]);
 
-  if (loading) return <h1>Loading...</h1>;
-  if (error) return <h1>Error: {error}</h1>;
+    console.log('🔄 Fetching comments for thread:', thread_id);
+    loadComments(thread_id); // ✅ Ensure comments are fetched when the component loads
+  }, [thread_id]); // ✅ Add `comments` dependency to trigger re-render
 
-  // Handle adding a new comment
-  const handleCommentSubmit = async newComment => {
-    console.log('🔍 Sending Comment:', newComment); // ✅ Log the request body
+  // Handle deleting a thread
+  const handleDeleteThread = async () => {
+    console.log('🗑️ Deleting thread:', thread_id);
     try {
-      await addComment(thread_id, newComment);
-      setComments(prev => ({
-        ...prev,
-        [thread_id]: [
-          ...prev[thread_id],
-
-          {
-            username: newComment.username,
-            content: newComment.commentText,
-            timestamp: new Date().toISOString(),
-          },
-        ],
-      }));
+      await deleteThread(thread_id);
+      setThreads(prev => prev.filter(t => t.thread_id !== Number(thread_id)));
+      navigate(`/categories/${category_id}`);
     } catch (error) {
-      console.error('Error adding comment:', error);
+      console.error('Error deleting thread:', error);
     }
   };
 
+  // Enable Edit Mode
+  const enableEdit = () => {
+    setEditMode(true);
+    setEditedTitle(thread.title);
+    setEditedContent(thread.content);
+  };
+
+  // Handle updating a thread
+  const handleUpdateThread = async () => {
+    console.log('✏️ Updating thread:', thread_id);
+    try {
+      await updateThread(thread_id, {
+        title: editedTitle,
+        content: editedContent,
+      });
+      setThreads(prev =>
+        prev.map(t =>
+          t.thread_id === Number(thread_id)
+            ? { ...t, title: editedTitle, content: editedContent }
+            : t
+        )
+      );
+      setEditMode(false);
+      setMessage('Thread updated successfully');
+      setTimeout(() => setMessage(''), 2000); //Hide message after 2 sec
+    } catch (error) {
+      console.error('Error updating thread:', error);
+      setMessage('Failed to update thread');
+    }
+  };
+
+  if (!thread) return <h1>Thread Not Found</h1>;
+
   return (
     <div>
-      {/* Display Thread Title */}
-      <h1>{thread ? thread.title : 'Thread Not Found'}</h1>
-      <p>{thread ? thread.content : 'Loading...'}</p>
-      <p>Created by: {thread ? thread.username : 'Loading...'}</p>
-      <p>
-        Posted on:
-        {thread ? new Date(thread.timestamp).toLocaleString() : 'Loading...'}
-      </p>
+      {/* Success Message UI */}
+      {message && <div className='success-message'>{message}</div>}
 
-      {/* Thread Edit & Delete Buttons */}
-      <ThreadActions
-        onEdit={() => console.log('Edit thread')}
-        onDelete={() => console.log('Delete thread')}
-      />
+      {editMode ? (
+        <div>
+          <input
+            value={editedTitle}
+            onChange={e => setEditedTitle(e.target.value)}
+          />
+          <textarea
+            value={editedContent}
+            onChange={e => setEditedContent(e.target.value)}
+          />
+          <button onClick={handleUpdateThread}>Save Changes</button>
+          <button onClick={() => setEditMode(false)}>Cancel</button>
+        </div>
+      ) : (
+        <>
+          <h1>{thread.title}</h1>
+          <p>{thread.content}</p>
+          <p>Created by: {thread.username}</p>
+          <p>Posted on: {new Date(thread.timestamp).toLocaleString()}</p>
+          <ThreadActions onEdit={enableEdit} onDelete={handleDeleteThread} />
+        </>
+      )}
 
-      {/* Display Comments */}
       <CommentList comments={comments[thread_id] || []} />
+      <CommentForm
+        onSubmit={async newComment => {
+          try {
+            const response = await addComment(thread_id, newComment);
+            console.log('✅ API Response from addComment:', response); // ✅ Debugging
 
-      {/* Add a New Comment */}
-      <CommentForm onSubmit={handleCommentSubmit} />
+            if (!response.comment || !response.comment.comment_id) {
+              console.error('❌ Comment ID is missing in API response.');
+              return;
+            }
+
+            setComments(prev => ({
+              ...prev,
+              [thread_id]: [
+                ...(prev[thread_id] || []), // ✅ Ensures prev[thread_id] is never undefined
+                {
+                  comment_id: response.comment.comment_id, // ✅ Ensures new comment gets a valid ID
+                  username: newComment.username,
+                  content: newComment.content || newComment.commentText, // ✅ Ensures content is valid
+                  timestamp: new Date().toISOString(),
+                },
+              ],
+            }));
+          } catch (error) {
+            console.error('Error adding comment:', error);
+          }
+        }}
+      />
     </div>
   );
 }
