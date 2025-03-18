@@ -47,14 +47,18 @@ export function getThreadsbyCategoryId(req, res) {
   const { category_id } = req.params;
   const { orderBy, order } = req.query;
 
+  // Ensure the category exists
   const category = fetchCategoryById(category_id);
   if (!category) {
-    return res.status(404).send({ error: 'Category not found' });
+    return res.status(404).json({ error: 'Category not found' });
   }
 
+  // ✅ Fetch only threads belonging to this category
+  const threads = fetchThreads({ categoryId: category_id, orderBy, order });
+
   res.json({
-    category_name: category.category_name || 'Unknown Category',
-    threads: fetchThreads(category_id, orderBy, order),
+    category_name: category.category_name,
+    threads,
   });
 }
 
