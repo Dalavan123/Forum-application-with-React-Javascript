@@ -1,11 +1,11 @@
 # Forum-application-with-React-Javascript
 
 This is a Forum Web Application.
-Frontend: used React Vite
+Frontend: used React Vite (Javascript)
 Backend: Node.js/Express
 Database: SQLite
 
-**Features**
+### **Features**
 
 - Create, update, and delete threads
 - Sort threads by newest, username or number of comments
@@ -15,7 +15,7 @@ Database: SQLite
 
 ### **Frontend**
 
-- React
+- React Javascript
 - Vite
 - React Router
 - CSS
@@ -33,6 +33,9 @@ Database: SQLite
 
 ### **1️⃣ Clone the Repository**
 
+Create a folder where you want to save the app, open it in VS code.
+Open the terminal for the projects root and run:
+
 ```sh
 git clone https://github.com/Dalavan123/Forum-application-with-React-Javascript.git
 cd assignment-forum-react
@@ -40,25 +43,20 @@ cd assignment-forum-react
 ```
 
 2️⃣ Backend Setup
-sh
-cd backend
-npm install
-npm start
+
+- In terminal from root directory run:
+- cd backend
+- npm install (to install node_modules since they are ignored to git)
+- nodemon index.js (starts the backend server)
 
 3️⃣ Frontend Setup
-sh
-cd frontend
-npm install
-npm run dev
 
-📌 Available Scripts
-Backend
-nodemon index.js → Starts the backend server.
+- In a separate terminal from root directory run:
+  cd frontend
+  npm install (to install node_modules since they are ignored to git)
+  npm run dev (starting the frontend client)
 
-Frontend
-npm run dev → Starts the frontend development server.
-
-📂 Project Structure
+## 📂 Project Structure
 
 forum-app/
 │── backend/
@@ -86,7 +84,7 @@ forum-app/
 
 Further development possibilities:
 
-Authentication → Right now anyone can post, edit, and delete.
-Authentication → Implement possiblity to update and delete comment, buttons for update and delete comment are already there.
-Database is local → No cloud storage.
-Structure → Structure is kept simple and easy to further develop layout and styling further.
+- **Authentication** → Right now anyone can post, edit, and delete.
+- **Comments Management** → Implement possiblity to update and delete comment, buttons for update and delete comment are already there.
+- **Database is local** → No cloud storage.
+- **UI Structure** → Layout is kept simple, ready for further styling and improvements.
