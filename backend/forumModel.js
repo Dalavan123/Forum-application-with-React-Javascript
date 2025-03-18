@@ -12,54 +12,34 @@ export function fetchCategories() {
 //Get a category by ID
 export function fetchCategoryById(categoryId) {
   return db
-    .prepare('SELECT * FROM categories WHERE category_id = ?')
+    .prepare('SELECT * FROM categories WHERE category_id = ? LIMIT 1')
     .get(categoryId);
 }
 
-// Fetch all threads with sorting
-export function fetchAllThreads(orderBy = 'timestamp', order = 'DESC') {
-  const validColumns = ['username', 'timestamp', 'num_comments'];
-  if (!validColumns.includes(orderBy)) {
-    orderBy = 'timestamp'; // Default to sorting by timestamp
-  }
-
-  return db
-    .prepare(
-      `
-    SELECT t.*, u.username, COUNT(c.comment_id) as num_comments
-    FROM threads t
-    JOIN users u ON t.user_id = u.user_id
-    LEFT JOIN comments c ON t.thread_id = c.thread_id
-    GROUP BY t.thread_id
-    ORDER BY ${orderBy} ${order}
-  `
-    )
-    .all();
-}
-
 // Fetch threads by category with sorting
-export function fetchThreadsByCategory(
-  categoryId,
+export function fetchThreads({
+  categoryId = null,
   orderBy = 'timestamp',
-  order = 'DESC'
-) {
+  order = 'DESC',
+}) {
   const validColumns = ['username', 'timestamp', 'num_comments'];
-  if (!validColumns.includes(orderBy)) {
-    orderBy = 'timestamp'; // Default sorting
-  }
+  if (!validColumns.includes(orderBy)) orderBy = 'timestamp'; // Prevent SQL injection
 
-  return db
-    .prepare(
-      `
-    SELECT t.*, u.username, COUNT(c.comment_id) as num_comments
+  let query = `SELECT t.*, u.username, COUNT(c.comment_id) AS num_comments
     FROM threads t
     JOIN users u ON t.user_id = u.user_id
-    LEFT JOIN comments c ON t.thread_id = c.thread_id
-    WHERE t.category_id = ?
-    GROUP BY t.thread_id
-    ORDER BY ${orderBy} ${order}`
-    )
-    .all(categoryId);
+    LEFT JOIN comments c ON t.thread_id = c.thread_id`;
+
+  const params = [];
+
+  if (categoryId) {
+    query += ' WHERE t.category_id = ?';
+    params.push(categoryId);
+  }
+
+  query += ' GROUP BY t.thread_id ORDER BY ' + orderBy + ' ' + order;
+
+  return db.prepare(query).all(...params);
 }
 
 //Get a thread by ID
@@ -69,7 +49,8 @@ export function fetchThreadById(threadId) {
       `SELECT t.*, u.username 
     FROM threads t
     JOIN users u ON t.user_id = u.user_id 
-    WHERE thread_id = ?`
+    WHERE thread_id = ?
+    LIMIT 1`
     )
     .get(threadId);
 }
@@ -87,16 +68,6 @@ export function fetchCommentsByThread(threadId) {
     .all(threadId);
 }
 
-// Add a new comment
-export function addNewComment(threadId, userId, content) {
-  return db
-    .prepare(
-      `INSERT INTO comments (thread_id, user_id, content, timestamp) 
-     VALUES (?, ?, ?, datetime('now'))`
-    )
-    .run(threadId, userId, content);
-}
-
 export function createUser(username) {
   const existingUser = db
     .prepare('SELECT * FROM users WHERE username = ?')
@@ -109,7 +80,7 @@ export function createUser(username) {
   return result ? { user_id: result.lastInsertRowid, username } : null;
 }
 
-export function createNewThread(title, content, categoryId, userId) {
+export function addThread(title, content, categoryId, userId) {
   return db
     .prepare(
       `INSERT INTO threads (title, content, category_id, user_id, timestamp) 
@@ -128,10 +99,12 @@ export function updateThreadById(threadId, title, content) {
     .run(title, content, threadId);
 }
 
-export function createNewComment(threadId, userId, content) {
+// Add a new comment
+export function addComment(threadId, userId, content) {
   return db
     .prepare(
-      "INSERT INTO comments (thread_id, user_id, content, timestamp) VALUES (?, ?, ?, datetime('now'))"
+      `INSERT INTO comments (thread_id, user_id, content, timestamp) 
+     VALUES (?, ?, ?, datetime('now'))`
     )
     .run(threadId, userId, content);
 }

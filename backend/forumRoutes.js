@@ -1,38 +1,52 @@
 import express from 'express';
 
-// Import the controller methods from blog.controller.js
 import {
   homePage,
   getCategories,
   getThreadsbyCategoryId,
-  getComments,
   getThreads,
   getThreadById,
   getCommentsByThread,
-  createThread,
   addComment,
+  createThread,
   deleteThread,
   updateThread,
 } from './forumController.js';
 
+import {
+  validateThreadFields,
+  validateCommentFields,
+} from './middleware/validationMiddleware.js';
+
 export const routes = express.Router();
 
-// ########## GET - Endpoints ##########
-
+// ########## General routes ##########
 routes.get('/', homePage);
 routes.get('/categories', getCategories);
+
+// ########## Threads routes ##########
 routes.get('/threads', getThreads);
 routes.get('/categories/:category_id/threads', getThreadsbyCategoryId);
-routes.get('/categories/:category_id/threads/:thread_id/comments', getComments);
 routes.get('/categories/:category_id/threads/:thread_id', getThreadById);
+
+// ########## Comments routes ##########
 routes.get('/threads/:thread_id/comments', getCommentsByThread);
+routes.post(
+  '/threads/:thread_id/comments',
+  (req, res, next) => {
+    console.log('🔍 Middleware triggered before addComment');
+    console.log('🔹 Request Body:', req.body); // ✅ Debugging request body before validation
+    next();
+  },
+  validateCommentFields,
+  (req, res, next) => {
+    console.log('🔍 Middleware triggered before addComment');
+    next();
+  },
+  addComment
+);
 
-// ########## POST - Endpoints ##########
-routes.post('/threads', createThread);
-routes.post('/threads/:thread_id/comments', addComment);
-
-// ########## DELETE - Endpoints ##########
-routes.delete('/threads/:thread_id', deleteThread);
-
-// ########## PUT - Endpoints ##########
+// ########## Thread Actions (Create, Update, Delete part of CRUD) ##########
+routes.post('/threads', validateThreadFields, createThread);
 routes.put('/threads/:thread_id', updateThread);
+routes.delete('/threads/:thread_id', deleteThread);
