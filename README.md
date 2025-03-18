@@ -61,28 +61,6 @@ cd assignment-forum-react
 ```
 forum-app/
 │── backend/
-│ ├── package.json # Backend dependencies
-│ ├── index.js # Starts the backend server
-│ ├── forumRoutes.js # API routes
-│ ├── forumController.js # Handle HTTP req/res with client
-│ ├── forumModel.js # Database queries
-│ ├── middleware/ # Validation thread/comment & error handling
-│ ├── forum.db # SQLite database
-│── frontend/
-│ ├── package.json # Frontend dependencies
-│ ├── vite.config.js # Vite config
-│ ├── src/
-│ │ ├── main.jsx # React entry file and routerprovider
-│ │ ├── components/ # UI components
-│ │ ├── views/ # Page views
-│ │ ├── api/ # API requests
-│ │ ├── context/ # Context API state
-│ │ ├── styles/ # CSS files
-│── README.md # This file
-│── .gitignore # Git ignored files
-
-forum-app/
-│── backend/
 │   ├── package.json        # Backend dependencies
 │   ├── index.js            # Starts the backend server
 │   ├── forumRoutes.js      # API routes
