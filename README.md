@@ -58,6 +58,7 @@ cd assignment-forum-react
 
 ## 📂 Project Structure
 
+```
 forum-app/
 │── backend/
 │ ├── package.json # Backend dependencies
@@ -79,6 +80,8 @@ forum-app/
 │ │ ├── styles/ # CSS files
 │── README.md # This file
 │── .gitignore # Git ignored files
+
+```
 
 📌 Notes
 
