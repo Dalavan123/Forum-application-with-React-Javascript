@@ -1,7 +1,11 @@
+/*Hanterar trådar globalt, hämtar, lägger till, uppdaterar.
+Hanterar kommentarer per tråd, sparar i stateobjekt*/
+
 import React, { createContext, useState, useEffect } from 'react';
 import { fetchThreads } from '../api/apiThreads';
 import { fetchCommentsByThreadId } from '../api/apiComments';
 
+// Skapar Context för trådar och kommentarer
 export const ThreadContext = createContext();
 
 export function ThreadProvider({ children }) {
@@ -10,6 +14,7 @@ export function ThreadProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Hämta alla trådar vid första renderingen
   useEffect(() => {
     fetchThreads()
       .then(data => {
@@ -23,23 +28,22 @@ export function ThreadProvider({ children }) {
       });
   }, []);
 
-  // ✅ Ensure `addNewThread` is correctly defined
+  // Lägg till en ny tråd i state
   const addNewThread = newThread => {
     console.log('✅ Adding new thread to state:', newThread);
     setThreads(prevThreads => [...prevThreads, newThread]);
   };
 
-  // Ensure new threads update immedieately in state
+  // Hämta kommentarer för en specifik tråd
   const loadComments = async threadId => {
     try {
       console.log('🔄 Fetching comments for thread:', threadId);
       const data = await fetchCommentsByThreadId(threadId);
-      console.log('✅ API Response for Comments:', data); // ✅ Debugging
 
       if (data.comments) {
         setComments(prev => ({
           ...prev,
-          [threadId]: data.comments, // ✅ Store comments in state properly
+          [threadId]: data.comments, // Lagra kommentarer per tråd-ID
         }));
       }
     } catch (error) {

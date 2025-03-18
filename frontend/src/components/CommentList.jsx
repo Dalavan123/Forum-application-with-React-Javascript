@@ -1,19 +1,23 @@
+/*Uppbyggnad av liststrukturen för kommentarerna, inget API-anrop
+Får commentslistan från ThreadContext (föräldrer), exempelvis i ThreadDetailsview där ThreadContext
+importeras och "comments" passeras in som props*/
+
 import React from 'react';
 import { CommentActions } from './CommentActions';
 
 export function CommentList({ comments }) {
-  console.log('🛠️ Rendering Comments:', comments); // ✅ Debugging to ensure comments are passed correctly
+  console.log('🛠️ Rendering Comments:', comments); // Debugging to ensure comments are passed correctly
   if (!comments || comments.length === 0) {
+    //Varnar om inga kommentarer
     return <p>No comments yet. Be the first to comment!</p>;
   }
 
   return (
     <ul>
       {comments.map(comment => (
-        <li key={comment.comment_id || Math.random()}>
+        <li key={comment.comment_id}>
           {' '}
-          {/* ✅ Ensures a unique key */}
-          {/* ✅ Use comment_id or fallback */}
+          {/* Ovan säkerställer unikt nyckelvärde*/}
           <strong>{comment.username}</strong>: {comment.content}
           <br />
           <span style={{ fontSize: '0.8em', color: 'gray' }}>

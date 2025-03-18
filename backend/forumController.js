@@ -39,7 +39,23 @@ export function getCategories(req, res) {
 // Retrieve all threads from database
 export function getThreads(req, res) {
   const { orderBy, order } = req.query;
-  res.json(fetchThreads(orderBy, order));
+  const defaultOrderBy = 'timestamp';
+  const defaultOrder = 'DESC';
+
+  if (!orderBy) {
+    orderBy = defaultOrderBy;
+  }
+
+  if (!order) {
+    order = defaultOrder;
+  }
+
+  console.log(`🔍 API Request Received - orderBy: ${orderBy}, order: ${order}`);
+
+  const threads = fetchThreads(orderBy, order);
+
+  console.log(`✅ Threads Retrieved (${threads.length} threads)`);
+  res.json(threads);
 }
 
 // Retrieve threads for a specific category

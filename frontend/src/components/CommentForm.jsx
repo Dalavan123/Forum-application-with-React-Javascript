@@ -7,9 +7,9 @@ export function CommentForm({ onSubmit }) {
 
   const handleSubmit = e => {
     e.preventDefault();
-    if (!commentText.trim() || !username.trim()) return;
-    onSubmit({ commentText, username });
-    setCommentText('');
+    if (!commentText.trim() || !username.trim()) return; // Förhindrar tomma inlägg
+    onSubmit({ commentText, username }); // Skickar data till överordnad komponent
+    setCommentText(''); // Nollställ input-fält
     setUsername('');
   };
 

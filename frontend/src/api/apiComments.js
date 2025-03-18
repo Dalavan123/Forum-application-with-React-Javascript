@@ -13,8 +13,8 @@ export const addComment = async (threadId, newComment) => {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      content: newComment.commentText, // ✅ Match backend field name
-      username: newComment.username, // ✅ Match backend field name
+      content: newComment.commentText, // Skickar rätt fält till backend
+      username: newComment.username, // Skickar rätt fält till backend
     }),
   };
   return await apiRequest(url, options, 'Failed to add comment');

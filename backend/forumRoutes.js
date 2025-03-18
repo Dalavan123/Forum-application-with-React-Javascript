@@ -31,20 +31,7 @@ routes.get('/categories/:category_id/threads/:thread_id', getThreadById);
 
 // ########## Comments routes ##########
 routes.get('/threads/:thread_id/comments', getCommentsByThread);
-routes.post(
-  '/threads/:thread_id/comments',
-  (req, res, next) => {
-    console.log('🔍 Middleware triggered before addComment');
-    console.log('🔹 Request Body:', req.body); // ✅ Debugging request body before validation
-    next();
-  },
-  validateCommentFields,
-  (req, res, next) => {
-    console.log('🔍 Middleware triggered before addComment');
-    next();
-  },
-  addComment
-);
+routes.post('/threads/:thread_id/comments', validateCommentFields, addComment);
 
 // ########## Thread Actions (Create, Update, Delete part of CRUD) ##########
 routes.post('/threads', validateThreadFields, createThread);

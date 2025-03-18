@@ -20,10 +20,10 @@ export function fetchCategoryById(categoryId) {
 export function fetchThreads({
   categoryId = null,
   orderBy = 'timestamp',
-  order = 'DESC',
+  order = 'DESC', // default to DESC if order is not provided
 }) {
   const validColumns = ['username', 'timestamp', 'num_comments'];
-  if (!validColumns.includes(orderBy)) orderBy = 'timestamp'; // Prevent SQL injection
+  orderBy = validColumns.includes(orderBy) ? orderBy : 'timestamp'; //
 
   let query = `SELECT t.*, u.username, COUNT(c.comment_id) AS num_comments
     FROM threads t
@@ -37,8 +37,11 @@ export function fetchThreads({
     params.push(categoryId);
   }
 
-  query += ' GROUP BY t.thread_id ORDER BY ' + orderBy + ' ' + order;
+  query += ` GROUP BY t.thread_id ORDER BY ${
+    orderBy === 'username' ? 'u.username' : orderBy
+  } ${order}`;
 
+  console.log('🔄 Executing SQL Query:', query); // ✅ Debugging SQL Query
   return db.prepare(query).all(...params);
 }
 

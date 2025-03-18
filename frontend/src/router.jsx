@@ -5,6 +5,7 @@ import { ThreadDetailsView } from './views/ThreadDetailsView';
 import { HomeView } from './views/HomeView';
 import { NewThreadView } from './views/NewThreadView';
 
+//Skapar router för navigering
 export const router = createBrowserRouter([
   {
     element: <App />,
@@ -14,10 +15,6 @@ export const router = createBrowserRouter([
       {
         element: <HomeView />,
         index: true,
-      },
-      {
-        element: <Outlet />,
-        path: '/categories/:category_id',
       },
       {
         element: <ThreadDetailsView />,

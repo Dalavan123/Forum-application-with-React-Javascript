@@ -1,31 +1,15 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 export function SortingControls({ sortBy, setSortBy, order, setOrder }) {
-  useEffect(() => {
-    console.log('✅ SortingControls Mounted - Current sortBy:', sortBy); // ✅ Debugging on mount
-  }, [sortBy]);
-
-  const handleSortChange = e => {
-    const newSort = e.target.value;
-    console.log('🔄 Sorting changed to:', e.target.value); // ✅ Debugging
-    setSortBy(newSort);
-  };
-
-  const toggleOrder = () => {
-    const newOrder = order === 'DESC' ? 'ASC' : 'DESC';
-    console.log('🔄 Order changed to:', newOrder); // ✅ Debugging
-    setOrder(newOrder);
-  };
-
   return (
     <div>
       <label>Sort by:</label>
-      <select value={sortBy} onChange={handleSortChange}>
+      <select value={sortBy} onChange={e => setSortBy(e.target.value)}>
         <option value='timestamp'>Newest</option>
         <option value='username'>Username</option>
         <option value='num_comments'>Most Comments</option>
       </select>
-      <button onClick={toggleOrder}>
+      <button onClick={() => setOrder(order === 'DESC' ? 'ASC' : 'DESC')}>
         {order === 'DESC' ? 'Descending' : 'Ascending'}
       </button>
     </div>

@@ -1,3 +1,6 @@
+//Hanterar API-anrop relaterade till kategorier.
+//Använder apiRequest för att hämta data från backend och hanterar felloggning.
+
 import { apiRequest } from './apiRequest';
 
 const BASE_URL = 'http://localhost:3000/categories';

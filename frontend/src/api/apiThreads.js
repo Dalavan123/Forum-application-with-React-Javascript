@@ -2,8 +2,8 @@ import { apiRequest } from './apiRequest';
 
 const BASE_URL = 'http://localhost:3000/threads';
 
-export const fetchThreads = async sortBy => {
-  const url = `${BASE_URL}?orderBy=${sortBy}`;
+export const fetchThreads = async (sortBy, order) => {
+  const url = `${BASE_URL}?orderBy=${sortBy}&order=${order}`;
   return await apiRequest(url, {}, 'Failed to fetch threads');
 };
 
